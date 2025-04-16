@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Downloader</title>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 30px; }
+    input, select, button { padding: 10px; margin: 10px; width: 300px; }
+  </style>
+</head>
+<body>
+  <h1>Universal Video Downloader</h1>
+  <form id="downloadForm">
+    <input type="text" id="videoUrl" placeholder="Enter video URL" required />
+    <select id="resolution">
+      <option value="4k">4K (default)</option>
+      <option value="1080p">1080p</option>
+      <option value="720p">720p</option>
+      <option value="480p">480p</option>
+      <option value="360p">360p</option>
+      <option value="audio">Audio Only</option>
+    </select>
+    <button type="submit">Download</button>
+  </form>
+  <p id="status"></p>
+  <script>
+    document.getElementById("downloadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const videoUrl = document.getElementById("videoUrl").value;
+      const resolution = document.getElementById("resolution").value;
+      document.getElementById("status").textContent = "Processing...";
+
+      const res = await fetch("/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoUrl, resolution })
+      });
+
+      if (res.ok) {
+        const { downloadUrl } = await res.json();
+        document.getElementById("status").innerHTML = `<a href="${downloadUrl}" download>Download Now</a>`;
+      } else {
+        document.getElementById("status").textContent = "Failed to download.";
+      }
+    });
+  </script>
+</body>
+</html>
